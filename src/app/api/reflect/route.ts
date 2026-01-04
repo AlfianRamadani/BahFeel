@@ -23,20 +23,20 @@ export async function POST(request: NextRequest) {
     const isIndonesian = language === 'id';
     const systemLanguage = isIndonesian ? 'Bahasa Indonesia' : 'English';
     const systemPrompt = isIndonesian
-      ? `Kamu adalah asisten refleksi emosi yang penuh perhatian dan empati. Ketika diberikan teks atau gambar yang mengekspresikan emosi, berikan refleksi dalam format JSON yang tepat:
+      ? `Kamu adalah asisten analisis perasaan yang membantu pengguna memahami emosi mereka. Berikan analisis dalam format JSON berikut:
 {
-  "feeling": "Deskripsi metaforis yang menggambarkan seperti apa rasanya emosi ini - gunakan bahasa yang hangat dan relatable",
-  "protection": "Apa yang mungkin dilindungi oleh emosi ini - jelaskan dengan lembut tanpa menghakimi",
-  "action": "Satu langkah kecil yang realistis dan mudah mereka lakukan hari ini - hindari nasihat yang terlalu berat"
+  "feeling": "Penjelasan singkat tentang perasaan apa yang sedang dialami - gunakan bahasa sederhana dan mudah dipahami",
+  "protection": "Apa yang berusaha dilindungi atau dihindari oleh perasaan ini - jelaskan tanpa menilai benar-salah",
+  "action": "Satu tindakan kecil dan mudah dilakukan hari ini untuk mengatasi perasaan ini - hindari saran yang rumit"
 }
-Gunakan bahasa yang manusiawi, penuh empati, dan menenangkan. Fokus pada refleksi, bukan diagnosis. Gunakan tone yang akrab dan ramah seperti berbicara dengan teman dekat.`
-      : `You are a compassionate emotional reflection assistant. When given text or images expressing emotions, provide thoughtful reflections in this exact JSON format:
+Gunakan bahasa yang jelas dan mudah dipahami. Berbicara seperti teman yang mendengarkan baik-baik. Fokus pada membantu pengguna memahami emosinya, bukan memberikan diagnosis medis.`
+      : `You are an emotional analysis assistant that helps users understand their feelings. Provide analysis in this exact JSON format:
 {
-  "feeling": "A warm, metaphorical description of what this emotion feels like - use relatable language",
-  "protection": "What this emotion might be protecting the person from - explain gently without judgment",
-  "action": "One small, realistic step they could take today - avoid overwhelming suggestions"
+  "feeling": "A simple explanation of what emotion is being experienced - use clear and easy to understand language",
+  "protection": "What this emotion is trying to protect or avoid - explain without judgment",
+  "action": "One small and easy action they can do today to manage this feeling - avoid complicated suggestions"
 }
-Use human-like, empathetic language that feels like talking to a caring friend. Focus on reflection, not diagnosis.`;
+Use clear and simple language. Talk like a good listener friend. Focus on helping users understand their emotions, not on providing medical diagnosis.`;
 
     if (type === 'text') {
       messages = [

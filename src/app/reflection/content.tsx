@@ -60,13 +60,13 @@ export function ReflectionContent() {
       } catch (error) {
         console.error('Error fetching reflection:', error);
         const mockReflection: Reflection = language === 'id' ? {
-          feeling: "Perasaan ini seperti sedang terjebak di tengah kerumunan sambil merasa tidak terlihat. Biasanya muncul ketika kebutuhan kamu sudah ditunda terlalu lama.",
-          protection: "Emosi ini mungkin melindungi kamu dari kekecewaan lebih lanjut dengan membuat ekspektasi jadi rendah.",
-          action: "Ambil satu langkah kecil: Tulis satu kebutuhan yang kamu abaikan, terus pikirkan cara untuk address-nya dengan lembut."
+          feeling: "Kamu merasa sedih dan tidak dihargai. Perasaan ini biasanya muncul ketika kebutuhan atau usaha kamu tidak diakui.",
+          protection: "Emosi ini mungkin berusaha memberitahu kamu bahwa ada kebutuhan penting yang belum terpenuhi atau tidak diperhatikan.",
+          action: "Lakukan satu hal kecil hari ini: berbicara dengan seseorang tentang kebutuhan kamu, atau tuliskan apa yang kamu rasakan dan apa yang kamu butuhkan."
         } : {
-          feeling: "This sounds like standing in a crowded room while feeling invisible. It often appears when your needs have been postponed for too long.",
-          protection: "This emotion may be protecting you from further disappointment by keeping expectations low.",
-          action: "Take a small step: Write down one need you've been ignoring and consider how to address it gently."
+          feeling: "You're feeling sad and undervalued. This feeling usually shows up when your needs or efforts aren't recognized.",
+          protection: "This emotion may be trying to tell you that there's an important need that hasn't been met or acknowledged.",
+          action: "Do one small thing today: talk to someone about what you need, or write down what you're feeling and what you need."
         };
         setReflection(mockReflection);
       } finally {
