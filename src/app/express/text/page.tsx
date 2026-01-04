@@ -11,10 +11,34 @@ export default function ExpressText() {
   const router = useRouter();
   const { t, language } = useLanguage();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (text.trim()) {
-      router.push(`/reflection?type=text&content=${encodeURIComponent(text)}`);
+      try {
+        const response = await fetch('/api/reflect', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ type: 'text', content: text }),
+        });
+
+        if (!response.ok) {
+          throw new Error('Failed to get reflection');
+        }
+
+        const data = await response.json();
+        const reflectionData = {
+          feeling: data.feeling,
+          protection: data.protection,
+          action: data.action,
+        };
+        
+        router.push(`/reflection?type=text&content=${encodeURIComponent(JSON.stringify(reflectionData))}`);
+      } catch (error) {
+        console.error('Error getting reflection:', error);
+        alert('Ada error saat generate reflection. Coba lagi ya.');
+      }
     }
   };
 
