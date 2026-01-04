@@ -19,7 +19,7 @@ const translations: Translations = {
     id: 'Banyak orang yang susah ngungkapin apa yang dirasain, jadinya stres dalam diam dan nggak dapet bantuan. BahFeel di sini buat membantu kamu mengekspresikan perasaan lewat tulisan atau gambar, terus kasih pantulang yang adem biar kamu paham lebih baik tentang diri sendiri. Cihuyyy'
   },
   startExpressing: { en: 'Start Expressing', id: 'Mulai Ungkapin Perasaan' },
-  privacy: { en: 'No account required. Your privacy is protected.', id: 'Enggak perlu akun kok. Privasimu tetep aman wkwk.' },
+  privacy: { en: 'No account required. Your privacy is protected.', id: 'Enggak perlu login kok. Privasimu tetep aman wkwk.' },
   dashboardTitle: { en: 'How would you like to express yourself today?', id: 'Gimana nih, mau ungkapin perasaan hari ini?' },
   writeThoughts: { en: 'Write Your Thoughts', id: 'Tulis Apa yang Kamu Rasain' },
   writeDesc: { en: 'Share what\'s on your mind through words.', id: 'Tulis aja perasaan, pikiran, atau apa pun yang lagi muter di otak kamu.' },
