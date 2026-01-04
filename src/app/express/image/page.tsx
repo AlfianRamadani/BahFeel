@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { Upload, Camera } from 'lucide-react';
 import { useLanguage } from '../../../context/LanguageContext';
 import { LanguageSwitcher } from '../../../components/LanguageSwitcher';
+import Image from 'next/image';
 
 export default function ExpressImage() {
   const [file, setFile] = useState<File | null>(null);
@@ -15,6 +16,7 @@ export default function ExpressImage() {
   const [mode, setMode] = useState<'upload' | 'camera' | null>(null);
   const [error, setError] = useState<string>('');
   const [showCamera, setShowCamera] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { t, language } = useLanguage();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -28,7 +30,7 @@ export default function ExpressImage() {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = (event) => {
-        const img = new Image();
+        const img = document.createElement('img');
         img.src = event.target?.result as string;
         img.onload = () => {
           const canvas = document.createElement('canvas');
@@ -50,7 +52,7 @@ export default function ExpressImage() {
     });
   };
 
-  const handleFile = async (selectedFile: File) => {
+  const handleFile = useCallback(async (selectedFile: File) => {
     setError('');
 
     if (!selectedFile.type.startsWith('image/')) {
@@ -67,16 +69,16 @@ export default function ExpressImage() {
       const compressedData = await compressImage(selectedFile);
       setFile(selectedFile);
       setPreview(compressedData);
-    } catch (err) {
+    } catch {
       setError(t('failedProcessImage'));
     }
-  };
+  }, [MAX_FILE_SIZE, t]);
 
   const onDrop = useCallback((acceptedFiles: File[]) => {
     if (acceptedFiles.length > 0) {
       handleFile(acceptedFiles[0]);
     }
-  }, []);
+  }, [handleFile]);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -97,11 +99,15 @@ export default function ExpressImage() {
         videoRef.current.srcObject = stream;
         setShowCamera(true);
       }
-    } catch (err: any) {
-      if (err.name === 'NotAllowedError') {
-        setError(t('cameraPermissionDenied'));
-      } else if (err.name === 'NotFoundError') {
-        setError(t('noCameraFound'));
+    } catch (err: unknown) {
+      if (err instanceof DOMException) {
+        if (err.name === 'NotAllowedError') {
+          setError(t('cameraPermissionDenied'));
+        } else if (err.name === 'NotFoundError') {
+          setError(t('noCameraFound'));
+        } else {
+          setError(t('failedAccessCamera'));
+        }
       } else {
         setError(t('failedAccessCamera'));
       }
@@ -135,7 +141,7 @@ export default function ExpressImage() {
           setShowCamera(false);
         }
       }, 'image/jpeg', 0.8);
-    } catch (err) {
+    } catch {
       setError(t('failedCapturePhoto'));
     }
   };
@@ -143,11 +149,12 @@ export default function ExpressImage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (file && preview) {
-      const fullContent = imageDescription 
+      const fullContent = imageDescription
         ? `[IMAGE]\n${preview}\n[DESCRIPTION]\n${imageDescription}`
         : preview;
-      
+
       try {
+        setIsLoading(true);
         const response = await fetch('/api/reflect', {
           method: 'POST',
           headers: {
@@ -166,11 +173,12 @@ export default function ExpressImage() {
           protection: data.protection,
           action: data.action,
         };
-        
+
         router.push(`/reflection?type=image&content=${encodeURIComponent(JSON.stringify(reflectionData))}`);
       } catch (error) {
         console.error('Error getting reflection:', error);
         alert('Ada error saat generate reflection. Coba lagi ya.');
+        setIsLoading(false);
       }
     }
   };
@@ -326,100 +334,145 @@ export default function ExpressImage() {
           {t('uploadImage')}
         </motion.h1>
 
-        <motion.form
-          onSubmit={handleSubmit}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.6, delay: 0.4 }}
-          className="space-y-6"
-        >
-          <div
-            {...getRootProps()}
-            className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all ${isDragActive
-              ? 'border-stone-400 bg-stone-50'
-              : 'border-stone-300 hover:border-stone-400'
-              }`}
+        {!preview ? (
+          <motion.form
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="space-y-6"
           >
-            <input {...getInputProps()} />
-            <Upload className="mx-auto h-12 w-12 text-stone-400 mb-4" />
-            {isDragActive ? (
-              <p className="text-stone-600 font-medium">{t('dropImageHere')}</p>
-            ) : (
-              <>
-                <p className="text-stone-600 font-medium">{t('dragDropImage')}</p>
-                <p className="text-stone-500 text-sm mt-1">{t('clickSelect')}</p>
-              </>
-            )}
-          </div>
-
-          {error && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"
+            <div
+              {...getRootProps()}
+              className={`border-2 border-dashed rounded-lg p-12 text-center cursor-pointer transition-all ${isDragActive
+                ? 'border-stone-400 bg-stone-50'
+                : 'border-stone-300 hover:border-stone-400'
+                }`}
             >
-              {error}
-            </motion.div>
-          )}
+              <input {...getInputProps()} />
+              <Upload className="mx-auto h-12 w-12 text-stone-400 mb-4" />
+              {isDragActive ? (
+                <p className="text-stone-600 font-medium">{t('dropImageHere')}</p>
+              ) : (
+                <>
+                  <p className="text-stone-600 font-medium">{t('dragDropImage')}</p>
+                  <p className="text-stone-500 text-sm mt-1">{t('clickSelect')}</p>
+                </>
+              )}
+            </div>
 
-          {preview && (
+            <div className="flex justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setFile(null);
+                  setPreview(null);
+                  setImageDescription('');
+                  setError('');
+                  setMode(null);
+                }}
+                className="px-6 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50 transition-colors"
+              >
+                {t('back')}
+              </button>
+            </div>
+          </motion.form>
+        ) : (
+          <motion.form
+            onSubmit={handleSubmit}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            className="space-y-6"
+          >
+            {error && (
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg"
+              >
+                {error}
+              </motion.div>
+            )}
+
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               className="text-center space-y-4"
             >
-              <img
-                src={preview}
-                alt="Preview"
-                className="max-w-full max-h-96 mx-auto rounded-lg border border-stone-200 shadow-sm"
-              />
-              <p className="text-sm text-stone-500">{t('preview')}</p>
+              {isLoading && (
+                <div className="flex justify-center items-center">
+                  <div className="relative w-12 h-12">
+                    <motion.div
+                      className="absolute inset-0 border-4 border-stone-200 rounded-full"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      style={{ borderTopColor: '#292524' }}
+                    />
+                  </div>
+                  <p className="ml-4 text-stone-600 font-medium">{t('loading') || 'Sending...'}</p>
+                </div>
+              )}
               
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                className="mt-4"
-              >
-                <label className="block text-sm font-medium text-stone-700 mb-2">
-                  {t('imageDescription')}
-                </label>
-                <textarea
-                  value={imageDescription}
-                  onChange={(e) => setImageDescription(e.target.value)}
-                  placeholder={t('imageDescriptionPlaceholder')}
-                  className="w-full h-24 p-3 border border-stone-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-stone-300 bg-white text-stone-800 text-sm"
-                />
-                <p className="text-xs text-stone-500 mt-1">
-                  {t('imageDescription')}
-                </p>
-              </motion.div>
-            </motion.div>
-          )}
+              {!isLoading && (
+                <>
+                  <Image
+                    src={preview}
+                    alt="Preview"
+                    className="max-w-full max-h-96 mx-auto rounded-lg border border-stone-200 shadow-sm"
+                    width={500}
+                    height={192}
+                  />
+                  <p className="text-sm text-stone-500">{t('preview')}</p>
 
-          <div className="flex justify-center gap-4">
-            <button
-              type="button"
-              onClick={() => {
-                setFile(null);
-                setPreview(null);
-                setImageDescription('');
-                setError('');
-                setMode(null);
-              }}
-              className="px-6 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50 transition-colors"
-            >
-              {t('back')}
-            </button>
-            <button
-              type="submit"
-              disabled={!file || !preview}
-              className="px-6 py-2 bg-stone-700 text-white rounded-lg hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-            >
-              {t('reflect')}
-            </button>
-          </div>
-        </motion.form>
+                  <motion.div
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.2 }}
+                    className="mt-4"
+                  >
+                    <label className="block text-sm font-medium text-stone-700 mb-2">
+                      {t('imageDescription')}
+                    </label>
+                    <textarea
+                      value={imageDescription}
+                      onChange={(e) => setImageDescription(e.target.value)}
+                      placeholder={t('imageDescriptionPlaceholder')}
+                      className="w-full h-24 p-3 border border-stone-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-stone-300 bg-white text-stone-800 text-sm"
+                    />
+                    <p className="text-xs text-stone-500 mt-1">
+                      {t('imageDescription')}
+                    </p>
+                  </motion.div>
+                </>
+              )}
+            </motion.div>
+
+            <div className="flex justify-center gap-4">
+              <button
+                type="button"
+                onClick={() => {
+                  setFile(null);
+                  setPreview(null);
+                  setImageDescription('');
+                  setError('');
+                  setMode(null);
+                }}
+                disabled={isLoading}
+                className="px-6 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {t('back')}
+              </button>
+              <button
+                type="submit"
+                disabled={!file || !preview || isLoading}
+                className="px-6 py-2 bg-stone-700 text-white rounded-lg hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isLoading ? (t('loading') || 'Loading...') : t('reflect')}
+              </button>
+            </div>
+          </motion.form>
+        )}
       </motion.main>
     </div>
   );
