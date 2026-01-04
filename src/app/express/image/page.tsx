@@ -160,7 +160,7 @@ export default function ExpressImage() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ type: 'image', content: fullContent }),
+          body: JSON.stringify({ type: 'image', content: fullContent, language }),
         });
 
         if (!response.ok) {
@@ -177,7 +177,7 @@ export default function ExpressImage() {
         router.push(`/reflection?type=image&content=${encodeURIComponent(JSON.stringify(reflectionData))}`);
       } catch (error) {
         console.error('Error getting reflection:', error);
-        alert('Ada error saat generate reflection. Coba lagi ya.');
+        alert(language === 'id' ? 'Ada error saat generate reflection. Coba lagi ya.' : 'Error generating reflection. Please try again.');
         setIsLoading(false);
       }
     }
@@ -280,15 +280,12 @@ export default function ExpressImage() {
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setMode('camera');
-                setTimeout(() => startCamera(), 100);
-              }}
-              className="w-full bg-white border border-stone-200 rounded-lg p-8 hover:border-stone-300 hover:shadow-lg transition-all duration-300 text-stone-800"
+              disabled
+              className="w-full bg-gray-100 border border-gray-300 rounded-lg p-8 cursor-not-allowed text-gray-600 opacity-60"
             >
-              <Camera className="mx-auto h-12 w-12 text-stone-600 mb-4" />
+              <Camera className="mx-auto h-12 w-12 text-gray-400 mb-4" />
               <h2 className="text-xl font-semibold">{t('takePicture')}</h2>
-              <p className="text-stone-600 mt-2">{t('takePictureDesc')}</p>
+              <p className="text-gray-500 mt-2">{language === 'id' ? 'Sedang diperbaiki - Maaf atas ketidaknyamanannya' : 'Currently being fixed - Sorry for the inconvenience'}</p>
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -413,7 +410,7 @@ export default function ExpressImage() {
                   <p className="ml-4 text-stone-600 font-medium">{t('loading') || 'Sending...'}</p>
                 </div>
               )}
-              
+
               {!isLoading && (
                 <>
                   <Image
@@ -466,9 +463,20 @@ export default function ExpressImage() {
               <button
                 type="submit"
                 disabled={!file || !preview || isLoading}
-                className="px-6 py-2 bg-stone-700 text-white rounded-lg hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-6 py-2 bg-stone-700 text-white rounded-lg hover:bg-stone-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2"
               >
-                {isLoading ? (t('loading') || 'Loading...') : t('reflect')}
+                {isLoading ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                    />
+                    <span>{language === 'id' ? 'Lagi renungin...' : 'Reflecting...'}</span>
+                  </>
+                ) : (
+                  t('reflect')
+                )}
               </button>
             </div>
           </motion.form>

@@ -15,8 +15,8 @@ const translations: Translations = {
   appName: { en: 'BahFeel', id: 'BahFeel' },
   tagline: { en: 'When emotions are hard to say, let them be seen.', id: 'Lagi susah ungkapin perasaan?, ungkapin aja disini hehe.' },
   problem: {
-    en: 'Millions struggle to articulate their emotions, leading to silent stress and delayed support. BahFeel helps you express what you feel through words or images, offering gentle reflections to guide you toward clarity and understanding.',
-    id: 'Banyak orang yang susah ngungkapin apa yang dirasain, jadinya stres dalam diam dan nggak dapet bantuan. BahFeel di sini buat membantu kamu mengekspresikan perasaan lewat tulisan atau gambar, terus kasih pantulang yang adem biar kamu paham lebih baik tentang diri sendiri. Cihuyyy'
+    en: 'Millions struggle to articulate their emotions, leading to silent stress and delayed support. BahFeel helps you express what you feel through words or images, offering gentle insights to guide you toward clarity and understanding.',
+    id: 'Banyak orang yang susah ngungkapin apa yang dirasain, jadinya stres dalam diam dan nggak dapet bantuan. BahFeel di sini buat membantu kamu mengekspresikan perasaan lewat tulisan atau gambar, terus kasih analisis yang adem biar kamu paham lebih baik tentang diri sendiri. Cihuyyy'
   },
   startExpressing: { en: 'Start Expressing', id: 'Mulai Ungkapin Perasaan' },
   privacy: { en: 'No account required. Your privacy is protected.', id: 'Enggak perlu login kok. Privasimu tetep aman wkwk.' },
@@ -28,7 +28,7 @@ const translations: Translations = {
   viewTimeline: { en: 'View Your Emotional Timeline', id: 'Liat Riwayat Perasaanmu_^' },
   expressMore: { en: 'Express More', id: 'Ungkapin Lagi' },
   back: { en: 'Back', id: 'Kembali' },
-  reflect: { en: 'Reflect', id: 'Liat Pantulannya' },
+  reflect: { en: 'Reflect', id: 'Lihat Penjelasannya' },
   cancel: { en: 'Cancel', id: 'Batalin' },
   capturePhoto: { en: 'Capture Photo', id: 'Ambil Fotonya' },
   takePicture: { en: 'Take a Picture', id: 'Ambil Foto Sekarang' },
@@ -39,7 +39,7 @@ const translations: Translations = {
   dropImageHere: { en: 'Drop the image here...', id: 'Yaudah drop fotonya di sini...' },
   preview: { en: 'Preview (optimized)', id: 'Pratinjau (udah dicet dah)' },
   writeThoughtsPlaceholder: { en: 'What\'s on your mind? Share your feelings, thoughts, or experiences...', id: 'Apa yang lagi kamu pikir dan rasain? Cerita aja perasaan atau pengalaman kamu...' },
-  yourReflection: { en: 'Your Reflection', id: 'Pantulan Perasaan Kamu' },
+  yourReflection: { en: 'Your Reflection', id: 'Penjelasan Perasaan Kamu' },
   whatYouFeeling: { en: 'What you might be feeling', id: 'Kayaknya kamu lagi ngerasa...' },
   whatProtecting: { en: 'What this emotion may be protecting', id: 'Perasaan ini mungkin melindungi kamu dari...' },
   gentleStep: { en: 'A gentle step you could take today', id: 'Langkah kecil yang bisa kamu coba hari ini' },
@@ -63,6 +63,7 @@ const translations: Translations = {
   failedProcessImage: { en: 'Failed to process image', id: 'Foto gagal diproses. Coba yang lain ya.' },
   imageDescription: { en: 'Describe this image (optional)', id: 'Jelasin tentang gambar ini (opsional)' },
   imageDescriptionPlaceholder: { en: 'What\'s going on in this image? How does it make you feel?', id: 'Apa sih yang ada di gambar ini? Gimana perasaan kamu melihatnya?' },
+  reflecting: { en: 'Reflecting...', id: 'Lagi renungin...' },
 };
 
 interface LanguageContextType {

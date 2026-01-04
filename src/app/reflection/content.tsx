@@ -48,7 +48,7 @@ export function ReflectionContent() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ type, content }),
+          body: JSON.stringify({ type, content, language }),
         });
 
         if (!response.ok) {
@@ -59,7 +59,11 @@ export function ReflectionContent() {
         setReflection(data);
       } catch (error) {
         console.error('Error fetching reflection:', error);
-        const mockReflection: Reflection = {
+        const mockReflection: Reflection = language === 'id' ? {
+          feeling: "Perasaan ini seperti sedang terjebak di tengah kerumunan sambil merasa tidak terlihat. Biasanya muncul ketika kebutuhan kamu sudah ditunda terlalu lama.",
+          protection: "Emosi ini mungkin melindungi kamu dari kekecewaan lebih lanjut dengan membuat ekspektasi jadi rendah.",
+          action: "Ambil satu langkah kecil: Tulis satu kebutuhan yang kamu abaikan, terus pikirkan cara untuk address-nya dengan lembut."
+        } : {
           feeling: "This sounds like standing in a crowded room while feeling invisible. It often appears when your needs have been postponed for too long.",
           protection: "This emotion may be protecting you from further disappointment by keeping expectations low.",
           action: "Take a small step: Write down one need you've been ignoring and consider how to address it gently."
@@ -71,7 +75,7 @@ export function ReflectionContent() {
     };
 
     setReflectionData();
-  }, [type, content, router]);
+  }, [type, content, router, language]);
 
   if (loading) {
     return (

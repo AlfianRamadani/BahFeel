@@ -8,19 +8,21 @@ import { LanguageSwitcher } from '../../../components/LanguageSwitcher';
 
 export default function ExpressText() {
   const [text, setText] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { t, language } = useLanguage();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (text.trim()) {
+      setIsLoading(true);
       try {
         const response = await fetch('/api/reflect', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ type: 'text', content: text }),
+          body: JSON.stringify({ type: 'text', content: text, language }),
         });
 
         if (!response.ok) {
@@ -37,7 +39,8 @@ export default function ExpressText() {
         router.push(`/reflection?type=text&content=${encodeURIComponent(JSON.stringify(reflectionData))}`);
       } catch (error) {
         console.error('Error getting reflection:', error);
-        alert('Ada error saat generate reflection. Coba lagi ya.');
+        alert(language === 'id' ? 'Ada error saat generate reflection. Coba lagi ya.' : 'Error generating reflection. Please try again.');
+        setIsLoading(false);
       }
     }
   };
@@ -71,22 +74,36 @@ export default function ExpressText() {
             value={text}
             onChange={(e) => setText(e.target.value)}
             placeholder={t('writeThoughtsPlaceholder')}
-            className="w-full h-64 p-4 border border-stone-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-stone-300 bg-white text-stone-800"
+            className="w-full h-64 p-4 border border-stone-200 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-stone-300 bg-white text-stone-800 disabled:opacity-50"
             required
+            disabled={isLoading}
           />
           <div className="flex justify-center gap-4">
             <button
               type="button"
               onClick={() => router.back()}
-              className="px-6 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50 transition-colors"
+              disabled={isLoading}
+              className="px-6 py-2 border border-stone-300 rounded-lg text-stone-700 hover:bg-stone-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {t('back')}
             </button>
             <button
               type="submit"
-              className="px-6 py-2 bg-stone-700 text-white rounded-lg hover:bg-stone-800 transition-colors"
+              disabled={isLoading}
+              className="px-6 py-2 bg-stone-700 text-white rounded-lg hover:bg-stone-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {t('reflect')}
+              {isLoading ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                  />
+                  <span>{language === 'id' ? 'Lagi renungin...' : 'Reflecting...'}</span>
+                </>
+              ) : (
+                t('reflect')
+              )}
             </button>
           </div>
         </motion.form>
