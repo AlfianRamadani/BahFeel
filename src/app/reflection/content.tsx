@@ -131,16 +131,18 @@ export function ReflectionContent() {
       >
         <button
           onClick={() => {
-            const saved = JSON.parse(localStorage.getItem('bahfeel_reflections') || '[]');
-            saved.push({
-              id: Date.now(),
-              type,
-              content,
-              reflection,
-              date: new Date().toISOString()
-            });
-            localStorage.setItem('bahfeel_reflections', JSON.stringify(saved));
-            alert(t('reflectionSaved'));
+            if (typeof window !== 'undefined') {
+              const saved = JSON.parse(localStorage.getItem('bahfeel_reflections') || '[]');
+              saved.push({
+                id: Date.now(),
+                type,
+                content,
+                reflection,
+                date: new Date().toISOString()
+              });
+              localStorage.setItem('bahfeel_reflections', JSON.stringify(saved));
+              alert(t('reflectionSaved'));
+            }
           }}
           className="px-6 py-2 bg-stone-700 text-white rounded-lg hover:bg-stone-800 transition-colors"
         >

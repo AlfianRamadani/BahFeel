@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
@@ -21,10 +21,12 @@ interface SavedReflection {
 
 export default function Timeline() {
   const { t, language } = useLanguage();
-  const [reflections] = useState<SavedReflection[]>(() => {
+  const [reflections, setReflections] = useState<SavedReflection[]>([]);
+
+  useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('bahfeel_reflections') || '[]');
-    return saved.reverse();
-  });
+    setReflections(saved.reverse());
+  }, []);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 py-8 px-4">
